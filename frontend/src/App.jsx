@@ -199,10 +199,10 @@ socketRef.current.on("connect_error", (err) => {
             <Webcam
   ref={webcamRef}
   screenshotFormat="image/jpeg"
-  screenshotQuality={0.4}
+  screenshotQuality={0.3}
   videoConstraints={{
-    width: 320,
-    height: 240
+    width: 240,
+    height: 180,
   }}
   width={550}
 />
