@@ -11,14 +11,25 @@ function App() {
   const [countdown, setCountdown] = useState(null);
 
   useEffect(() => {
-    socketRef.current = io("http://127.0.0.1:5000");
+    socketRef.current = io(
+  "https://harry-potter-invisible-cloak.onrender.com",
+  {
+    transports: ["websocket"],
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+  }
+);
+    socketRef.current.on("connect", () => {
+  console.log("CONNECTED");
+});
 
-    socketRef.current.on("processed_frame", (data) => {
-      if (outputRef.current) {
-        outputRef.current.src = data;
-      }
-    });
+socketRef.current.on("disconnect", (reason) => {
+  console.log("DISCONNECTED:", reason);
+});
 
+socketRef.current.on("connect_error", (err) => {
+  console.log("CONNECTION ERROR:", err.message);
+});
     return () => socketRef.current.disconnect();
   }, []);
 
@@ -51,18 +62,21 @@ function App() {
   };
 
   const sendFrame = () => {
-    if (!backgroundCaptured) return;
-    if (!webcamRef.current) return;
+  if (!backgroundCaptured) return;
 
-    const image = webcamRef.current.getScreenshot();
+  if (!webcamRef.current) return;
 
-    if (!image) return;
+  const image = webcamRef.current.getScreenshot();
 
-    socketRef.current.emit("frame", image);
-  };
+  if (!image) return;
+
+  console.log("sending frame");
+
+  socketRef.current.emit("frame", image);
+};
 
   useEffect(() => {
-    const interval = setInterval(sendFrame, 80);
+    const interval = setInterval(sendFrame, 250);
 
     return () => clearInterval(interval);
   }, [backgroundCaptured]);
@@ -176,11 +190,15 @@ function App() {
             </h3>
 
             <Webcam
-              ref={webcamRef}
-              screenshotFormat="image/jpeg"
-              className="rounded-xl"
-              width={550}
-            />
+  ref={webcamRef}
+  screenshotFormat="image/jpeg"
+  screenshotQuality={0.4}
+  videoConstraints={{
+    width: 320,
+    height: 240
+  }}
+  width={550}
+/>
           </div>
         </div>
       )}

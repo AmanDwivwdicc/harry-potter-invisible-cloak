@@ -13,16 +13,22 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 @socketio.on("frame")
 def handle_frame(data):
+    print("📸 Frame received")
+
     img_data = base64.b64decode(data.split(",")[1])
     np_arr = np.frombuffer(img_data, np.uint8)
     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
     result = process_frame(frame)
 
+    print("✨ Frame processed")
+
     _, buffer = cv2.imencode(".jpg", result)
     encoded = base64.b64encode(buffer).decode("utf-8")
 
     emit("processed_frame", "data:image/jpeg;base64," + encoded)
+
+    print("🚀 Frame emitted")
 
 @socketio.on("set_background")
 def set_background_ws(data):
