@@ -19,6 +19,13 @@ function App() {
     reconnectionAttempts: Infinity,
   }
 );
+    socketRef.current.on("processed_frame", (data) => {
+  console.log("FRAME RECEIVED");
+
+  if (outputRef.current) {
+    outputRef.current.src = data;
+  }
+});
     socketRef.current.on("connect", () => {
   console.log("CONNECTED");
 });
