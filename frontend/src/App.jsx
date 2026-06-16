@@ -226,11 +226,6 @@ socketRef.current.on("connect_error", (err) => {
     screenshotFormat="image/jpeg"
     width={550}
 
-    videoConstraints={{
-  facingMode: "user",
-  width: 320,
-  height: 240
-}}
   />
 </div>
 
